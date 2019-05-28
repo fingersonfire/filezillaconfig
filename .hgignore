@@ -1,0 +1,9 @@
+# use glob syntax.
+syntax: glob
+
+*exe
+*suo
+bin
+obj
+
+FileZillaServer.xml

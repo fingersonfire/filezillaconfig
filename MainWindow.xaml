@@ -1,0 +1,157 @@
+<Window x:Class     = "FileZillaConfig.MainWindow"
+        xmlns       = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x     = "http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local = "clr-namespace:FileZillaConfig"
+        Title       = "FileZillaConfig"
+        Width       = "800"
+        Height      = "700" >
+    <StackPanel>
+        <!-- Filename and Save & Restart buttons -->
+        <StackPanel Orientation="Horizontal" Margin="10,10,10,10" >
+            <!-- Filename -->
+            <Label Content="Config File" MinWidth="75" FontWeight="ExtraBold" />
+            <TextBox MinWidth="150" IsReadOnly="True" Focusable="False"
+                     FontStyle="Italic" Foreground="Blue"
+                     Text="{Binding Path=Filename}" />
+
+            <!-- Save button-->
+            <Button Content="Save" Focusable="False" Click="FileSaveButton_Click" />
+
+            <!-- Restart Service -->
+            <Button Content="Restart Service" Focusable="False" Margin="10,0,0,0" Click="RestartService" />
+        </StackPanel>
+
+        <TabControl>
+            <!-- Users Tab -->
+            <TabItem Header="Users" >
+                <StackPanel>
+                    <!-- Current Users & Add New User -->
+                    <DockPanel Margin="0,5,0,5">
+                        <!-- Users-->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Label Content="Users" FontWeight="ExtraBold" />
+                            <ComboBox Name                = "UsersComboBox"
+                                      MinWidth            = "120"
+                                      HorizontalAlignment = "Left"
+                                      ItemsSource         = "{Binding Path=Users}"
+                                      SelectionChanged    = "UsersComboBox_SelectionChanged"
+                                      IsSynchronizedWithCurrentItem="True" />
+                            <Button Content="Delete" Focusable="False" Foreground="Red" Click="UserDeleteButton_Click" />
+                        </StackPanel>
+
+                        <!-- New User -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Label Content="New User" FontWeight="ExtraBold" />
+                            <TextBox Name="NewUserTextBox" MinWidth="100" MaxLength="15" CharacterCasing="Lower" />
+                            <Button Name="UserAddButton" Content="Add"
+                                    Focusable="False" Foreground="Blue"
+                                    Click="UserAddButton_Click" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- User Profile -->
+                    <StackPanel Name="EditPanel" Visibility="Collapsed" Margin="0,5,0,0" >
+                        <Border BorderBrush="Black" BorderThickness="1"/>
+
+                        <!-- Password -->
+                        <DockPanel Margin="0,10,0,5">
+                            <Label Content="MD5 Password" FontWeight="ExtraBold" />
+                            <TextBox Name="MD5PasswordTextBox" MinWidth="250" IsEnabled="False"
+                                     Text="{Binding Path=Users.CurrentItem.Option.Pass}" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Label Content="Change Password" FontWeight="ExtraBold" />
+                                <TextBox Name="PasswordTextBox" MinWidth="120" MaxLength="15" />
+                                <Button Content="Change" Focusable="False" Foreground="Blue" Click="PasswordButton_Click" />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Dirs & Downloads -->
+                        <DockPanel Margin="0,10,0,5">
+                            <!-- Dirs ComboBox -->
+                            <StackPanel Orientation="Horizontal" >
+                                <Label Content="Dirs" FontWeight="ExtraBold" />
+                                <ComboBox Name                = "DirsComboBox"
+                                          MinWidth            = "100"
+                                          HorizontalAlignment = "Left"
+                                          ItemsSource         = "{Binding Path=Users.CurrentItem.Permissions}"
+                                          IsSynchronizedWithCurrentItem="True" />
+                                <Button Content="Delete" Focusable="False" Foreground="Red" Click="DirDeleteButton_Click" />
+                            </StackPanel>
+
+                            <!-- Downloads ComboBox -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Label Content="Download Subfolders" FontWeight="ExtraBold" />
+                                <ComboBox Name                = "DownloadsComboBox"
+                                          MinWidth            = "150"
+                                          HorizontalAlignment = "Left"
+                                          ItemsSource         = "{Binding}"
+                                          SelectedIndex       = "0" />
+                                <Button Content="Add" Focusable="False" Foreground="Blue" Click="DirAddButton_Click" />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- User's Profile & Permissions -->
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="0,10,0,0">
+                            <StackPanel Margin="0,5,0,5">
+                                <!-- UserOption -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                    <Label Content="Group"                /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.Group}"/>
+                                    <Label Content="BypassServerUserlimit"/> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.BypassServerUserlimit}"/>
+                                    <Label Content="UserLimit"            /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.UserLimit}"/>
+                                    <Label Content="IPLimit"              /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.IPLimit}"/>
+                                    <Label Content="Enabled"              /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.Enabled}"/>
+                                    <Label Content="Comments"             /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.Comments}"/>
+                                    <Label Content="ForceSsl"             /> <TextBox Focusable="False" Text="{Binding Path=Users.CurrentItem.Option.ForceSsl}"/>
+                                </StackPanel>
+
+                                <!-- Permissions -->
+                                <ItemsControl Name="PermissionsControl" Focusable="False"
+                                              ItemsSource="{Binding Path=Users.CurrentItem.Permissions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,5,5,5">
+                                                <DockPanel>
+                                                    <Label Content="Dir" MinWidth="37" />
+                                                    <TextBox Focusable="False" MinWidth="300" Margin="0,0,10,0" Text="{Binding Path=Dir}" />
+                                                    <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=IsHome}" />
+                                                    <Label Content="IsHome" MinWidth="90" />
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <Label Content="File:" MinWidth="40" FontWeight="ExtraBold"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=FileRead}"   /> <Label Content="Read"   MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=FileWrite}"  /> <Label Content="Write"  MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=FileDelete}" /> <Label Content="Delete" MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=FileAppend}" /> <Label Content="Append" MinWidth="50"/>
+                                                    </StackPanel>
+                                                </DockPanel>
+
+                                                <DockPanel>
+                                                    <DockPanel.Resources>
+                                                        <local:AliasConverter x:Key="aliasConverter" />
+                                                    </DockPanel.Resources>
+                                                    <Label Content="Alias" MinWidth="37" />
+                                                    <TextBox Focusable="False" MinWidth="300" Margin="0,0,10,0" Text="{Binding Path=Aliases, Converter={StaticResource aliasConverter}}" />
+                                                    <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=AutoCreate}" />
+                                                    <Label Content="AutoCreate" MinWidth="90" />
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <Label Content="Dir:" MinWidth="40" FontWeight="ExtraBold"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=DirCreate}"  /> <Label Content="Create"  MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=DirDelete}"  /> <Label Content="Delete"  MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=DirList}"    /> <Label Content="List"    MinWidth="50"/>
+                                                        <CheckBox Focusable="False" VerticalAlignment="Center" IsChecked="{Binding Path=DirSubdirs}" /> <Label Content="Subdirs" MinWidth="50"/>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+
+            <!-- Settings Tab-->
+            <TabItem Name="SettingsTab" Header="Settings" />
+        </TabControl>
+    </StackPanel>
+</Window>
